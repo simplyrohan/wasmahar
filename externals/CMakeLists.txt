@@ -119,6 +119,9 @@ if ("x86_64" IN_LIST ARCHITECTURE OR "arm64" IN_LIST ARCHITECTURE)
         set(DYNARMIC_USE_PRECOMPILED_HEADERS ${CITRA_USE_PRECOMPILED_HEADERS} CACHE BOOL "")
         add_subdirectory(dynarmic EXCLUDE_FROM_ALL)
     endif()
+else()
+    # Useful for emscripten
+    add_subdirectory(tsl-robin-map)
 endif()
 
 # getopt
@@ -360,7 +363,7 @@ if (ENABLE_OPENAL)
         add_library(OpenAL INTERFACE)
         find_package(OpenAL REQUIRED)
         target_link_libraries(OpenAL INTERFACE OpenAL::OpenAL)
-    else()
+    elseif(NOT EMSCRIPTEN)
         set(ALSOFT_EMBED_HRTF_DATA OFF CACHE BOOL "")
         set(ALSOFT_EXAMPLES OFF CACHE BOOL "")
         set(ALSOFT_INSTALL OFF CACHE BOOL "")

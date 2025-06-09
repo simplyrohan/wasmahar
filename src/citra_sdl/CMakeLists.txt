@@ -37,7 +37,12 @@ target_link_libraries(citra_sdl PRIVATE inih)
 if (MSVC)
     target_link_libraries(citra_sdl PRIVATE getopt)
 endif()
-target_link_libraries(citra_sdl PRIVATE ${PLATFORM_LIBRARIES} SDL2::SDL2 Threads::Threads)
+
+if (NOT EMSCRIPTEN)
+    target_link_libraries(citra_sdl PRIVATE ${PLATFORM_LIBRARIES} SDL2::SDL2 Threads::Threads)
+else()
+    target_link_libraries(citra_sdl PRIVATE ${PLATFORM_LIBRARIES} Threads::Threads)
+endif()
 
 if (ENABLE_OPENGL)
     target_link_libraries(citra_sdl PRIVATE glad)

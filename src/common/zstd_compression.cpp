@@ -42,11 +42,18 @@ std::vector<u8> DecompressDataZSTD(std::span<const u8> compressed) {
     const std::size_t decompressed_size =
         ZSTD_getFrameContentSize(compressed.data(), compressed.size());
 
+    #ifndef __EMSCRIPTEN__
     if (decompressed_size == ZSTD_CONTENTSIZE_UNKNOWN) {
         LOG_ERROR(Common, "ZSTD decompressed size could not be determined.");
         return {};
     }
+    #endif
+
+    #ifdef __EMSCRIPTEN__
+    if (ZSTD_isError(decompressed_size)) {
+    #else
     if (decompressed_size == ZSTD_CONTENTSIZE_ERROR || ZSTD_isError(decompressed_size)) {
+    #endif
         LOG_ERROR(Common, "Error determining ZSTD decompressed size: {} ({})",
                   ZSTD_getErrorName(decompressed_size), decompressed_size);
         return {};

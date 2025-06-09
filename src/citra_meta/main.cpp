@@ -13,6 +13,9 @@
 #ifdef ENABLE_SDL2_FRONTEND
 #include "citra_sdl/citra_sdl.h"
 #endif
+#ifdef ENABLE_EMC
+#include "citra_emc/citra_emc.h"
+#endif
 
 #ifdef _WIN32
 extern "C" {
@@ -101,6 +104,10 @@ int main(int argc, char* argv[]) {
         LaunchQtFrontend(argc, argv);
         return 0;
     }
+#endif
+
+#if ENABLE_EMC
+    LaunchEmcFrontend(argc, argv);
 #endif
 
 #if ENABLE_SDL2_FRONTEND

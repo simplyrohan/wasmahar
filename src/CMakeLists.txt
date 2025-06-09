@@ -194,7 +194,11 @@ if (ENABLE_QT)
     add_subdirectory(citra_qt)
 endif()
 
-if (ENABLE_QT OR ENABLE_SDL2_FRONTEND)
+if (ENABLE_EMC)
+    add_subdirectory(citra_emc)
+endif()
+
+if (ENABLE_QT OR ENABLE_SDL2_FRONTEND OR ENABLE_EMC)
     add_subdirectory(citra_meta)
 endif()
 

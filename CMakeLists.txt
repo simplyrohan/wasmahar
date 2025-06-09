@@ -46,6 +46,10 @@ if (APPLE)
     endif()
 endif()
 
+if (EMSCRIPTEN)
+    set(CMAKE_EXECUTABLE_SUFFIX ".html")
+endif()
+
 if (CMAKE_BUILD_TYPE STREQUAL Debug)
     set(IS_DEBUG_BUILD ON)
     set(IS_RELEASE_BUILD OFF)
@@ -81,25 +85,28 @@ CMAKE_DEPENDENT_OPTION(ENABLE_SDL2_FRONTEND "Enable the SDL2 frontend" OFF "ENAB
 option(USE_SYSTEM_SDL2 "Use the system SDL2 lib (instead of the bundled one)" OFF)
 
 # Set bundled qt as dependent options.
-option(ENABLE_QT "Enable the Qt frontend" ON)
+CMAKE_DEPENDENT_OPTION(ENABLE_QT "Enable the Qt frontend" ON "NOT EMSCRIPTEN" OFF)
 option(ENABLE_QT_TRANSLATION "Enable translations for the Qt frontend" OFF)
 option(ENABLE_QT_UPDATE_CHECKER "Enable built-in update checker for the Qt frontend" OFF)
 
-CMAKE_DEPENDENT_OPTION(ENABLE_TESTS "Enable generating tests executable" ON "NOT IOS" OFF)
-CMAKE_DEPENDENT_OPTION(ENABLE_ROOM "Enable dedicated room functionality" ON "NOT ANDROID AND NOT IOS" OFF)
+option(ENABLE_EMC "Enable the Emscripten frontend" OFF)
+
+CMAKE_DEPENDENT_OPTION(ENABLE_TESTS "Enable generating tests executable" ON "NOT IOS AND NOT EMSCRIPTEN" OFF)
+CMAKE_DEPENDENT_OPTION(ENABLE_ROOM "Enable dedicated room functionality" ON "NOT ANDROID AND NOT IOS AND NOT EMSCRIPTEN" OFF)
 CMAKE_DEPENDENT_OPTION(ENABLE_ROOM_STANDALONE "Enable generating a standalone dedicated room executable" ON "ENABLE_ROOM" OFF)
 
 option(ENABLE_WEB_SERVICE "Enable web services (telemetry, etc.)" ON)
-option(ENABLE_SCRIPTING "Enable RPC server for scripting" ON)
+CMAKE_DEPENDENT_OPTION(ENABLE_WEB_SERVICE "Enable web services (telemetry, etc.)" ON "NOT EMSCRIPTEN" OFF)
+CMAKE_DEPENDENT_OPTION(ENABLE_SCRIPTING "Enable RPC server for scripting" ON "NOT EMSCRIPTEN" OFF)
 
-CMAKE_DEPENDENT_OPTION(ENABLE_CUBEB "Enables the cubeb audio backend" ON "NOT IOS" OFF)
+CMAKE_DEPENDENT_OPTION(ENABLE_CUBEB "Enables the cubeb audio backend" ON "NOT IOS AND NOT EMSCRIPTEN" OFF)
 option(ENABLE_OPENAL "Enables the OpenAL audio backend" ON)
 
-CMAKE_DEPENDENT_OPTION(ENABLE_LIBUSB "Enable libusb for GameCube Adapter support" ON "NOT IOS" OFF)
+CMAKE_DEPENDENT_OPTION(ENABLE_LIBUSB "Enable libusb for GameCube Adapter support" ON "NOT IOS AND NOT EMSCRIPTEN" OFF)
 
 CMAKE_DEPENDENT_OPTION(ENABLE_SOFTWARE_RENDERER "Enables the software renderer" ON "NOT ANDROID" OFF)
-CMAKE_DEPENDENT_OPTION(ENABLE_OPENGL "Enables the OpenGL renderer" ${DEFAULT_ENABLE_OPENGL} "NOT APPLE" OFF)
-option(ENABLE_VULKAN "Enables the Vulkan renderer" ON)
+CMAKE_DEPENDENT_OPTION(ENABLE_OPENGL "Enables the OpenGL renderer" ${DEFAULT_ENABLE_OPENGL} "NOT APPLE AND NOT EMSCRIPTEN" OFF)
+CMAKE_DEPENDENT_OPTION(ENABLE_VULKAN "Enables the Vulkan renderer" ON "NOT EMSCRIPTEN" OFF)
 
 option(USE_DISCORD_PRESENCE "Enables Discord Rich Presence" OFF)
 
@@ -126,6 +133,9 @@ if (ENABLE_ROOM)
 endif()
 if (ENABLE_SDL2_FRONTEND)
     add_definitions(-DENABLE_SDL2_FRONTEND)
+endif()
+if (ENABLE_EMC)
+    add_definitions(-DENABLE_EMC)
 endif()
 
 if(ENABLE_SSE42 AND (CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|AMD64"))
@@ -193,6 +203,15 @@ if (ENABLE_NATIVE_OPTIMIZATION)
     if (CXX_COMPILER_SUPPORTS_MARCH_NATIVE)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
     endif()
+endif()
+
+# Add Emscripten libs
+# =======================================================================
+if (EMSCRIPTEN)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} --use-port=sdl2 -pthread")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --use-port=sdl2 -pthread")
+    # set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_CXX_FLAGS} --use-port=sdl2 -lopenal -sMAX_WEBGL_VERSION=2 -pthread")
+    add_link_options(-lopenal -sMAX_WEBGL_VERSION=2 -pthread --use-port=sdl2)
 endif()
 
 # Sanity check : Check that all submodules are present

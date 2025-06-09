@@ -52,6 +52,10 @@ if (ENABLE_QT)
     target_link_libraries(citra_meta PRIVATE Boost::boost Qt6::Widgets)
 endif()
 
+if (ENABLE_EMC)
+    target_link_libraries(citra_meta PRIVATE citra_emc)
+endif()
+
 if (ENABLE_ROOM)
     target_link_libraries(citra_meta PRIVATE citra_room)
 endif()

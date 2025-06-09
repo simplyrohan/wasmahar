@@ -43,7 +43,11 @@ public:
         if (offset > size) {
             return ResultWriteBeyondEnd;
         } else if (offset == size) {
+            #ifdef __EMSCRIPTEN__
+            return 0UL;
+            #else
             return 0ULL;
+            #endif
         }
 
         if (offset + length > size) {

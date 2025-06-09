@@ -25,7 +25,9 @@ if(ENABLE_SDL2)
         sdl/sdl_impl.cpp
         sdl/sdl_impl.h
     )
-    target_link_libraries(input_common PRIVATE SDL2::SDL2)
+    if (NOT EMSCRIPTEN)
+        target_link_libraries(input_common PRIVATE SDL2::SDL2)
+    endif()
     target_compile_definitions(input_common PRIVATE HAVE_SDL2)
 endif()
 

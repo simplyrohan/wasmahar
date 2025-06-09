@@ -10,6 +10,10 @@
 #include "audio_core/openal_sink.h"
 #include "common/logging/log.h"
 
+#define AL_DIRECT_CHANNELS_SOFT                  0x1033
+typedef ALsizei (*ALBUFFERCALLBACKTYPESOFT)(ALvoid *userptr, ALvoid *sampledata, ALsizei numbytes) noexcept;
+typedef void (*LPALBUFFERCALLBACKSOFT)(ALuint buffer, ALenum format, ALsizei freq, ALBUFFERCALLBACKTYPESOFT callback, ALvoid *userptr) noexcept;
+
 namespace AudioCore {
 
 struct OpenALSink::Impl {
