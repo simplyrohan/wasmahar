@@ -67,7 +67,7 @@ endif()
 
 # LTO takes too much memory and time using MSVC.
 if (NOT MSVC AND IS_RELEASE_BUILD)
-    set(DEFAULT_ENABLE_LTO ON)
+    set(DEFAULT_ENABLE_LTO OFF)
 else()
     set(DEFAULT_ENABLE_LTO OFF)
 endif()
@@ -206,13 +206,14 @@ if (ENABLE_NATIVE_OPTIMIZATION)
 endif()
 
 # Add Emscripten libs
+
 # =======================================================================
 if (EMSCRIPTEN)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} --use-port=sdl2 -pthread -fexperimental-library -fwasm-exceptions")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --use-port=sdl2 -pthread -fexperimental-library -fwasm-exceptions")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g --use-port=sdl2 -pthread -fexperimental-library -fwasm-exceptions")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g --use-port=sdl2 -pthread -fexperimental-library -fwasm-exceptions")
     # experimental-library is for jthread
     add_link_options(-lopenal -sMAX_WEBGL_VERSION=2 --use-port=sdl2) # OpenAL, OpenGL, SDL2 ports
-    add_link_options(-pthread -sPTHREAD_POOL_SIZE=1 -fexperimental-library -fwasm-exceptions -sTOTAL_MEMORY=200MB) # stuff for threads, debugging, and others
+    add_link_options(-pthread -sPTHREAD_POOL_SIZE=15 -fexperimental-library -fwasm-exceptions -sTOTAL_MEMORY=200MB -sUSE_WEBGL2=1 --preload-file ../../rom.3ds@rom.3ds) # stuff for threads, debugging, and others
 endif()
 
 # Sanity check : Check that all submodules are present

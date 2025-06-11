@@ -5,7 +5,7 @@
 #pragma once
 
 #include <memory>
-#include "citra_emc/emu_window_sdl2.h"
+#include "citra_emc/gles_emu_window/emu_window_sdl2.h"
 
 struct SDL_Window;
 

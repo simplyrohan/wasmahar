@@ -1,10 +1,10 @@
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/CMakeModules)
 
 add_library(citra_emc STATIC EXCLUDE_FROM_ALL
-    emu_window_sdl2.cpp
-    emu_window_sdl2.h
-    emu_window_sdl2_gl.cpp
-    emu_window_sdl2_gl.h
+    gles_emu_window/emu_window_sdl2.cpp
+    gles_emu_window/emu_window_sdl2.h
+    gles_emu_window/emu_window_sdl2_gl.cpp
+    gles_emu_window/emu_window_sdl2_gl.h
     citra_emc.cpp
 )
 

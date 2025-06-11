@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <iostream>
 #include <algorithm>
 #include <array>
 #include <string_view>
@@ -30,6 +31,7 @@ void FmtLogMessageImpl(Class log_class, Level log_level, const char* filename,
 template <typename... Args>
 void FmtLogMessage(Class log_class, Level log_level, const char* filename, unsigned int line_num,
                    const char* function, fmt::format_string<Args...> format, const Args&... args) {
+    std::cout << fmt::vformat(format, fmt::make_format_args(args...)) << std::endl;
     FmtLogMessageImpl(log_class, log_level, filename, line_num, function, format,
                       fmt::make_format_args(args...));
 }

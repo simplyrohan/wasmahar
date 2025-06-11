@@ -2,13 +2,14 @@
 // Licensed under GPLv2 or any later version
 // Refer to the license.txt file included.
 
+#include <iostream>
 #include <algorithm>
 #include <cstdlib>
 #include <string>
 #define SDL_MAIN_HANDLED
 #include <SDL2/SDL.h>
 #include <glad/glad.h>
-#include "citra_emc/emu_window_sdl2_gl.h"
+#include "citra_emc/gles_emu_window/emu_window_sdl2_gl.h"
 #include "common/scm_rev.h"
 #include "common/settings.h"
 #include "core/core.h"
@@ -46,7 +47,7 @@ private:
 static SDL_Window* CreateGLWindow(const std::string& window_title, bool gles) {
     if (gles) {
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
     } else {
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
@@ -81,14 +82,14 @@ EmuWindow_SDL2_GL::EmuWindow_SDL2_GL(Core::System& system_, bool fullscreen, boo
                                            Common::g_scm_branch, Common::g_scm_desc);
 
     // First, try to create a context with the requested type.
-    render_window = CreateGLWindow(window_title, Settings::values.use_gles.GetValue());
+    render_window = CreateGLWindow(window_title, true);
     if (render_window == nullptr) {
-        // On failure, fall back to context with flipped type.
-        render_window = CreateGLWindow(window_title, !Settings::values.use_gles.GetValue());
-        if (render_window == nullptr) {
-            LOG_CRITICAL(Frontend, "Failed to create SDL2 window: {}", SDL_GetError());
-            exit(1);
-        }
+        // On failure, fall back to context with flipped type. (not for emscripten)
+        // render_window = CreateGLWindow(window_title, !Settings::values.use_gles.GetValue());
+        // if (render_window == nullptr) {
+        LOG_CRITICAL(Frontend, "Failed to create SDL2 window: {}", SDL_GetError());
+        // exit(1);
+        // }
     }
 
     strict_context_required = std::strcmp(SDL_GetCurrentVideoDriver(), "wayland") == 0;
