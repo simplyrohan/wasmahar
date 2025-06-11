@@ -15,6 +15,8 @@
 #else
 #if defined(__Bitrig__) || defined(__DragonFly__) || defined(__FreeBSD__) || defined(__OpenBSD__)
 #include <pthread_np.h>
+#elif defined(__EMSCRIPTEN__)
+#include <emscripten/threading.h>
 #else
 #include <pthread.h>
 #endif
@@ -106,6 +108,8 @@ void SetCurrentThreadName(const char* name) {
         errno = e;
         LOG_ERROR(Common, "Failed to set thread name to '{}': {}", truncated, GetLastErrorMsg());
     }
+#elif defined(__EMSCRIPTEN__)
+    emscripten_set_thread_name(pthread_self(), name);
 #else
     pthread_setname_np(pthread_self(), name);
 #endif

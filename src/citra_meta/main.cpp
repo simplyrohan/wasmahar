@@ -108,6 +108,7 @@ int main(int argc, char* argv[]) {
 
 #if ENABLE_EMC
     LaunchEmcFrontend(argc, argv);
+    return 0;
 #endif
 
 #if ENABLE_SDL2_FRONTEND

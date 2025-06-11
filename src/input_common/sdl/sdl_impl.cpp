@@ -14,7 +14,13 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
+
+#ifdef __EMSCRIPTEN__
+#include <SDL2/SDL.h>
+#else
 #include <SDL.h>
+#endif
+
 #include "common/assert.h"
 #include "common/logging/log.h"
 #include "common/math_util.h"

@@ -105,7 +105,7 @@ option(ENABLE_OPENAL "Enables the OpenAL audio backend" ON)
 CMAKE_DEPENDENT_OPTION(ENABLE_LIBUSB "Enable libusb for GameCube Adapter support" ON "NOT IOS AND NOT EMSCRIPTEN" OFF)
 
 CMAKE_DEPENDENT_OPTION(ENABLE_SOFTWARE_RENDERER "Enables the software renderer" ON "NOT ANDROID" OFF)
-CMAKE_DEPENDENT_OPTION(ENABLE_OPENGL "Enables the OpenGL renderer" ${DEFAULT_ENABLE_OPENGL} "NOT APPLE AND NOT EMSCRIPTEN" OFF)
+CMAKE_DEPENDENT_OPTION(ENABLE_OPENGL "Enables the OpenGL renderer" ${DEFAULT_ENABLE_OPENGL} "NOT APPLE" OFF)
 CMAKE_DEPENDENT_OPTION(ENABLE_VULKAN "Enables the Vulkan renderer" ON "NOT EMSCRIPTEN" OFF)
 
 option(USE_DISCORD_PRESENCE "Enables Discord Rich Presence" OFF)
@@ -208,10 +208,11 @@ endif()
 # Add Emscripten libs
 # =======================================================================
 if (EMSCRIPTEN)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} --use-port=sdl2 -pthread")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --use-port=sdl2 -pthread")
-    # set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_CXX_FLAGS} --use-port=sdl2 -lopenal -sMAX_WEBGL_VERSION=2 -pthread")
-    add_link_options(-lopenal -sMAX_WEBGL_VERSION=2 -pthread --use-port=sdl2)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} --use-port=sdl2 -pthread -fexperimental-library -fwasm-exceptions")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --use-port=sdl2 -pthread -fexperimental-library -fwasm-exceptions")
+    # experimental-library is for jthread
+    add_link_options(-lopenal -sMAX_WEBGL_VERSION=2 --use-port=sdl2) # OpenAL, OpenGL, SDL2 ports
+    add_link_options(-pthread -sPTHREAD_POOL_SIZE=1 -fexperimental-library -fwasm-exceptions -sTOTAL_MEMORY=200MB) # stuff for threads, debugging, and others
 endif()
 
 # Sanity check : Check that all submodules are present
